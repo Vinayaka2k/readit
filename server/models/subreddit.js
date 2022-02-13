@@ -1,12 +1,14 @@
 const mongoose = require('mongoose')
 const schemaCleaner = require('../utils/schemaCleaner')
+const uniqueValidator = require('mongoose-unique-validator')
 
 const subredditSchema = new mongoose.Schema(
     {
         subredditName : {
             type: String,
             required: true,
-            trim: true
+            trim: true,
+            unique: true
         },
         description : {
             type: String,
@@ -29,9 +31,9 @@ const subredditSchema = new mongoose.Schema(
                 ref: 'User'
             }
         ],
-        subscribersCount : {
+        subscriberCount : {
             type: Number,
-            required: true
+            default: 1
         }
     },
     {
@@ -39,5 +41,6 @@ const subredditSchema = new mongoose.Schema(
     }
 )
 
+subredditSchema.plugin(uniqueValidator)
 schemaCleaner(subredditSchema)
 module.exports = mongoose.model('Subreddit', subredditSchema)

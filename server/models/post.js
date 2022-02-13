@@ -60,8 +60,9 @@ const postSchema = new mongoose.Schema({
             }
         },
         subreddit : {
-            type : mongoose.Schema.Types.ObjectId,
-            ref : 'Subreddit'
+            type : String,
+            trim: true,
+            required: true
         },
         author : {
             type : mongoose.Schema.Types.ObjectId,
@@ -73,7 +74,13 @@ const postSchema = new mongoose.Schema({
                 ref : 'User'
             }
         ],
-        upvoteCount : {
+        downvotedBy : [
+            {
+                type : mongoose.Schema.Types.ObjectId,
+                ref : 'User'
+            }
+        ],
+        pointsCount : {
             type : Number,
             required : true,
             default : 1
