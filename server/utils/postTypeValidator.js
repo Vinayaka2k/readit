@@ -13,25 +13,25 @@ const parseLinkSubmission = link => {
 }
 
 const parseImageSubmission = img => {
-    if(!img || !img.imageLink || !img.imageId)
+    if(!img)
         throw new Error(`Image Link and ID are required for post type 'Image' `)
     return img
 }
 
-const postTypeValidator = bodyObj => {
-    switch(bodyObj.postType){
+const postTypeValidator = (type, text, link, image) => {
+    switch(type){
         case 'Text' : 
             return {
                 postType : 'Text',
-                textSubmission : parseTextSubmission(bodyObj.textSubmission)
+                textSubmission : parseTextSubmission(text)
             }
         case 'Link' : return {
             postType : 'Link',
-            linkSubmission : parseLinkSubmission(bodyObj.linkSubmission)
+            linkSubmission : parseLinkSubmission(link)
         }
         case 'Image' : return {
             postType : 'Image',
-            imageSubmission : parseImageSubmission(bodyObj.imageSubmission)
+            imageSubmission : parseImageSubmission(image)
         }
         default : 
             throw new Error('Invalid post type. Valid types include - Text, Link or Image')

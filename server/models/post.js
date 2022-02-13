@@ -60,9 +60,8 @@ const postSchema = new mongoose.Schema({
             }
         },
         subreddit : {
-            type : String,
-            trim: true,
-            required: true
+            type : mongoose.Schema.Types.ObjectId,
+            ref: 'Subreddit'
         },
         author : {
             type : mongoose.Schema.Types.ObjectId,
