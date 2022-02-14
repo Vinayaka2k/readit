@@ -3,6 +3,7 @@ const Post = require('../models/post')
 const User = require('../models/user')
 const {auth} = require('../utils/middleware')
 
+
 router.post('/:id/comment/commentId/upvote', auth, async (req, res) => {
     const post = await Post.findById(req.params.id)
     const user = await User.findById(req.user)
