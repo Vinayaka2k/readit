@@ -52,7 +52,7 @@ router.patch(':/id', auth, async (req, res) => {
     res.status(202).json(subreddit)
 })
 
-router.patch('/:id/subscribe', auth, async (req, res) => {
+router.post('/:id/subscribe', auth, async (req, res) => {
     const user = await User.findById(req.user)
     const subreddit = await Subreddit.findById(req.params.id)
 
@@ -71,7 +71,7 @@ router.patch('/:id/subscribe', auth, async (req, res) => {
     subreddit.subscriberCount = subreddit.subscribedBy.length
     await subreddit.save()
     await user.save()
-    res.status(202).end()
+    res.status(201).end()
 })
 
 module.exports = router

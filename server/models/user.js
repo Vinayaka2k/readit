@@ -46,7 +46,15 @@ const userSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Subreddit'
             }
-        ]
+        ],
+        postKarma: {
+            type: Number,
+            default: 0,
+          },
+        commentKarma: {
+            type: Number,
+            default: 0,
+          },
     },
     {
         timestamps: true
