@@ -93,5 +93,6 @@ const postSchema = new mongoose.Schema({
 
 schemaCleaner(postSchema)
 schemaCleaner(commentSchema)
+schemaCleaner(replySchema)
 
 module.exports = mongoose.model('Post', postSchema)
