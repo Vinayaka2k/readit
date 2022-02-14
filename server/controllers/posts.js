@@ -109,7 +109,7 @@ router.post('/:id/downvote', auth, async (req, res) => {
     else
         post.pointsCount = calculatedPoints
     await post.save()
-    res.status(202).end()
+    res.status(201).end()
 })
 
 router.post('/:id/upvote', auth, async (req, res) => {
@@ -133,6 +133,68 @@ router.post('/:id/upvote', auth, async (req, res) => {
     else
         post.pointsCount = calculatedPoints
     await post.save()
-    res.status(202).end()
+    res.status(201).end()
 })
+
+router.post('/:id/comment', auth, async (req, res) => {
+    if(!req.body.comment)
+        return res.status(400).send({message: 'Comment body cant be empty!'})
+    const post = await Post.findById(req.params.id)
+    const user = await User.findById(req.user)
+
+    if(!post)
+        return res.status(404).send({message: `Post with ${req.params.id} doesnt exits in DB`})
+    if(!user)
+        return res.status(404).send({message: `User doesnot exits in database`})
+
+    post.comments = post.comments.concat({
+        commentedBy: user._id,
+        commentBody: comment
+    })
+    const savedPost = await post.save()
+    const populatedPost = await savedPost.populate([{path: 'author', select: 'username'}, {path: 'subreddit', select: 'subredditName'}, {path: 'comments.commentedBy', select: 'username'}])
+    res.status(201).json(populatedPost)
+})
+
+router.delete('/:id/comment/:commentId', auth, async (req, res) => {
+    const post = await Post.findById(req.params.id)
+    const user = await User.findById(req.user)
+
+    if(!post)
+        return res.status(404).send({message: `Post with ${req.params.id} doesnt exist in DB`})
+    if(!user)
+        return res.status(404).send({message: `User doesnot exits in database`})
+    
+    const targetComment = post.comments.find( c => c._id.toString() === req.params.commentId)
+    if(!targetComment)
+        return res.status(404).send({message: `Comment with id ${req.params.commentId} doesnt exist in database`})
+    if(targetComment.commentedBy.toString() !== user._id.toString())
+        return res.status(401).send({message : 'Access is denied'})
+    
+    post.comments = post.comments.filter( c => c._id.toString() !== req.params.commentId)
+    await post.save()
+    return res.status(204).end()
+})
+
+router.patch('/:id/comment/:commentId', auth, async (req, res) => {
+    const post = await Post.findById(req.params.id)
+    const user = await User.findById(req.user)
+    
+    if(!post)
+        return res.status(404).send({message: `Post with ${req.params.id} doesnt exist in DB`})
+    if(!user)
+        return res.status(404).send({message: `User doesnot exits in database`})
+    
+    const targetComment = post.comments.find( c => c._id.toString() === req.params.commentId)
+    if(!targetComment)
+        return res.status(404).send({message: `Comment with id ${req.params.commentId} doesnt exist in database`})
+    if(targetComment.commentedBy.toString() !== user._id.toString())
+        return res.status(401).send({message : 'Access is denied'})
+    
+    targetComment.commentBody = req.body.comment
+    post.comments = post.comments.map( c => c._id.toString() !== req.params.commentId ? c : targetComment)
+    await post.save()
+    res.status(202).json(post)
+})
+
 module.exports = router
