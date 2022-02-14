@@ -68,6 +68,7 @@ router.patch('/:id/subscribe', auth, async (req, res) => {
         subreddit.subscribedBy = subreddit.subscribedBy.concat(user._id)
         user.subscribedSubs = user.subscribedSubs.concat(subreddit._id)
     }
+    subreddit.subscriberCount = subreddit.subscribedBy.length
     await subreddit.save()
     await user.save()
     res.status(202).end()

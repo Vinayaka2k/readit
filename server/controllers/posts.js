@@ -43,4 +43,22 @@ router.post('/', auth, async (req, res) => {
     res.status(201).json(postToSend)
 })
 
+router.patch('/:id', auth, async (req, res) => {
+    const {textSubmission, linkSubmission, imageSubmission} = req.body
+    
+    const post = await Post.findById(req.params.id)
+    const author = await User.findById(req.user)
+    
+    if(!post)
+        return res.status(404).send({message: `Post with id ${req.params.id} doesnt exist in database`})
+    if(!author)
+        return res.status(404).send({message: `User doesnot exist in Database`})
+
+    if(post.author.toString() !== author._id.toString())
+        return res.status(401).send({message: 'Access is denied'})
+    //// todo
+    await post.save()
+    res.status(202).json(post)
+})
+
 module.exports = router
