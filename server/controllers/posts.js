@@ -8,8 +8,7 @@ const Subreddit = require('../models/subreddit')
 
 router.get('/', async (req, res) => {
     const allPosts = await Post.find({})
-        .populate('author', {username: 1})
-        .populate('subreddit', {subredditName : 1})
+        .populate([{path: 'author', select: 'username'}, {path: 'subreddit', select:'subredditName'}])
     res.status(200).json(allPosts)
 })
 

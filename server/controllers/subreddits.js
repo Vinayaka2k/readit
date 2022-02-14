@@ -52,4 +52,25 @@ router.patch(':/id', auth, async (req, res) => {
     res.status(202).json(subreddit)
 })
 
+router.patch('/:id/subscribe', auth, async (req, res) => {
+    const user = await User.findById(req.user)
+    const subreddit = await Subreddit.findById(req.params.id)
+
+    if(subreddit.subscribedBy.includes(user._id.toString())){
+        subreddit.subscribedBy = subreddit.subscribedBy.filter(user_id => {
+            user_id.toString() !== user._id.toString()
+        })
+        user.subscribedSubs = user.subscribedSubs.filter(subreddit_id => {
+            subreddit_id.toString() !== subreddit._id.toString()
+        })
+    }
+    else{
+        subreddit.subscribedBy = subreddit.subscribedBy.concat(user._id)
+        user.subscribedSubs = user.subscribedSubs.concat(subreddit._id)
+    }
+    await subreddit.save()
+    await user.save()
+    res.status(202).end()
+})
+
 module.exports = router
