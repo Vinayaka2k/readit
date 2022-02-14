@@ -61,4 +61,31 @@ router.patch('/:id', auth, async (req, res) => {
     res.status(202).json(post)
 })
 
+app.delete('/:id', auth, async () => {
+    const post = await Post.findById(req.params.id)
+    const author = await User.findById(req.user)
+
+    if(!post)
+        return res.status(404).send({message: `Post with ${req.params.id} doesnt exits in DB`})
+    if(!author)
+        return res.status(404).send({message: `User doesnot exits in database`})
+    
+    if(post.author.toString() !== author._id.toString())
+        return res.status(401).send({message: 'Access is denied'})
+    
+    const subreddit = await Subreddit.findById(post.subreddit)
+    if(!subreddit)
+        return res.status(404).send({message: `Subreddit with ${subreddit._id} doesnot exist in database`})
+
+    await Post.findByIdAndDelete(req.params.id)
+
+    subreddit.posts = subreddit.posts.filter(p => p.toString() !== req.params.id)
+    author.posts = author.posts.filter(p => p.toString() !== req.params.id)
+
+    await subreddit.save()
+    await author.save()
+
+    res.status(204).end()
+})
+
 module.exports = router
