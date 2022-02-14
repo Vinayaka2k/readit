@@ -117,6 +117,10 @@ const postSchema = new mongoose.Schema({
             default : 1
         },
         comments : [commentSchema],
+        commentCount : {
+            type: Number,
+            default: 0
+        },
         createdAt: {
             type: Date,
             default: Date.now,

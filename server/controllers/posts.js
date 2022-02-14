@@ -88,4 +88,17 @@ app.delete('/:id', auth, async () => {
     res.status(204).end()
 })
 
+router.get('/:id', async (req, res) => {
+    const post = await Post.findById(req.params.id)
+    if(!post)
+        return res.status(400).send({message: `Post with id ${req.params.id} doesnt exist in database`})
+    const populatedPost = post.populate([
+            {path: 'author', select: 'username'},
+            {path: 'subreddit', select: 'subredditName'},
+            {path: 'comments.commentedBy', select: 'username'},
+            {path: 'comments.replies.repliedBy', select: 'username'}
+        ])
+        return res.status(200).json(populatedPost)
+})
+
 module.exports = router

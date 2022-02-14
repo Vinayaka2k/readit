@@ -18,6 +18,7 @@ router.post('/:id/comment', auth, async (req, res) => {
         commentedBy: user._id,
         commentBody: comment
     })
+    post.commentCount = post.commentCount + 1
     const savedPost = await post.save()
     const populatedPost = await savedPost.populate([{path: 'author', select: 'username'}, {path: 'subreddit', select: 'subredditName'}, {path: 'comments.commentedBy', select: 'username'}])
     res.status(201).json(populatedPost)
@@ -39,6 +40,8 @@ router.delete('/:id/comment/:commentId', auth, async (req, res) => {
         return res.status(401).send({message : 'Access is denied'})
     
     post.comments = post.comments.filter( c => c._id.toString() !== req.params.commentId)
+    post.commentCount = post.commentCount - 1
+
     await post.save()
     return res.status(204).end()
 })
@@ -86,10 +89,15 @@ router.post('/:id/comment/:commentId/reply', auth, async (req, res) => {
     
     targetComment.replies = targetComment.replies.concat({
         replyBody : req.body.reply,
-        repliedBy: user._id
+        repliedBy: user._id,
+        upvotedBy: [user._id],
+        pointsCount : 1
     })
 
     post.comments = post.comments.map( c => c._id.toString() !== req.params.commentId ? c : targetComment)
+    //post.commentCount = post.commentCount + 1
+    //user.karmaPoints.commentKarma = user.karmaPoints.commentKarma + 1
+
     const savedPost = await post.save()
     const populatedPost = savedPost.populate([
         {path: 'author', select: 'username'},
@@ -122,6 +130,9 @@ router.delete('/:id/comment/:commentId/reply/:replyId', auth, async (req, res) =
     
     targetComment.replies = targetComment.replies.filter(r => r._id.toString() !== req.params.replyId)
     post.comments = post.comments.map( c => c._id.toString() !== req.params.commentId ? c : targetComment)
+    
+    //post.commentCount = post.commentCount - 1;
+    
     await post.save()
     return res.status(204).end()
 })

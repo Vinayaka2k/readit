@@ -16,6 +16,8 @@ router.get('/:id', async (req, res) => {
 })
 
 router.post('/avatar', auth, async (req, res) => {
+    if(!req.body.avatarImage)
+        return res.status(400).send({message: 'Image URL needed for setting avatar'})
     const user = await User.findById(req.user)
     if(!user)
         return res.status(404).send({message: 'User doesnot exist in database'})
