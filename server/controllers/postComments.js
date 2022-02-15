@@ -2,6 +2,7 @@ const router = require('express').Router();
 const Post = require('../models/post');
 const User = require('../models/user');
 const { auth } = require('../utils/middleware');
+const numOfComments = require('../utils/numOfComments')
 
 router.post('/:id/comment', auth, async (req, res) => {
     if(!req.body.comment)
@@ -18,10 +19,10 @@ router.post('/:id/comment', auth, async (req, res) => {
         commentedBy: user._id,
         commentBody: comment
     })
-    post.commentCount = post.commentCount + 1
+    post.commentCount = numOfComments(post.comments)
     const savedPost = await post.save()
-    const populatedPost = await savedPost.populate([{path: 'author', select: 'username'}, {path: 'subreddit', select: 'subredditName'}, {path: 'comments.commentedBy', select: 'username'}])
-    res.status(201).json(populatedPost)
+    const addedComment = savedPost.comments[savedPost.comments.length - 1];
+    res.status(201).json(addedComment);
 })
 
 router.delete('/:id/comment/:commentId', auth, async (req, res) => {
@@ -40,8 +41,7 @@ router.delete('/:id/comment/:commentId', auth, async (req, res) => {
         return res.status(401).send({message : 'Access is denied'})
     
     post.comments = post.comments.filter( c => c._id.toString() !== req.params.commentId)
-    post.commentCount = post.commentCount - 1
-
+    post.commentCount = numberOfComments(post.comments)
     await post.save()
     return res.status(204).end()
 })
@@ -63,14 +63,8 @@ router.patch('/:id/comment/:commentId', auth, async (req, res) => {
     
     targetComment.commentBody = req.body.comment
     post.comments = post.comments.map( c => c._id.toString() !== req.params.commentId ? c : targetComment)
-    const savedPost = await post.save()
-    const populatedPost = savedPost.populate([
-        {path: 'author', select: 'username'},
-        {path: 'subreddit', select: 'subredditName'},
-        {path: 'comments.commentedBy', select: 'username'},
-        {path: 'comments.replies.repliedBy', select: 'username'}
-    ])
-    res.status(202).json(populatedPost)
+    await post.save()
+    res.status(202).json(targetComment)
 })
 
 router.post('/:id/comment/:commentId/reply', auth, async (req, res) => {
@@ -95,17 +89,12 @@ router.post('/:id/comment/:commentId/reply', auth, async (req, res) => {
     })
 
     post.comments = post.comments.map( c => c._id.toString() !== req.params.commentId ? c : targetComment)
-    //post.commentCount = post.commentCount + 1
+    post.commentCount = numberOfComments(post.comments)
     //user.karmaPoints.commentKarma = user.karmaPoints.commentKarma + 1
 
-    const savedPost = await post.save()
-    const populatedPost = savedPost.populate([
-        {path: 'author', select: 'username'},
-        {path: 'subreddit', select: 'subredditName'},
-        {path: 'comments.commentedBy', select: 'username'},
-        {path: 'comments.replies.repliedBy', select: 'username'}
-    ])
-    res.status(201).json(populatedPost)
+    await post.save()
+    const addedReply = targetComment.replies[targetComment.replies.length-1]
+    res.status(201).json(addedReply)
 })
 
 router.delete('/:id/comment/:commentId/reply/:replyId', auth, async (req, res) => {
@@ -131,7 +120,7 @@ router.delete('/:id/comment/:commentId/reply/:replyId', auth, async (req, res) =
     targetComment.replies = targetComment.replies.filter(r => r._id.toString() !== req.params.replyId)
     post.comments = post.comments.map( c => c._id.toString() !== req.params.commentId ? c : targetComment)
     
-    //post.commentCount = post.commentCount - 1;
+    post.commentCount = numberOfComments(post.comments)
     
     await post.save()
     return res.status(204).end()
@@ -159,17 +148,13 @@ router.patch('/:id/comment/:commentId/reply/:replyId', auth, async (req, res) =>
     
     if(req.body.reply)
         targetReply.replyBody = req.body.reply
+    targetReply.updatedAt = Date.now
 
     targetComment.replies = targetComment.replies.map(r => r._id.toString() !== req.params.replyId ? r : targetReply)
     post.comments = post.comments.map( c => c._id.toString() !== req.params.commentId ? c : targetComment)
-    const savedPost = await post.save()
-    const populatedPost = savedPost.populate([
-        {path: 'author', select: 'username'},
-        {path: 'subreddit', select: 'subredditName'},
-        {path: 'comments.commentedBy', select: 'username'},
-        {path: 'comments.replies.repliedBy', select: 'username'}
-    ])
-    return res.status(202).json(populatedPost)
+    await post.save()
+    
+    res.status(202).json(targetReply)
 })
 
 module.exports = router

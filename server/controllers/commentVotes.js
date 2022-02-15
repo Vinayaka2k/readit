@@ -31,15 +31,14 @@ router.post('/:id/comment/commentId/upvote', auth, async (req, res) => {
     }
     targetComment.pointsCount = targetComment.upvotedBy.length - targetComment.downvotedBy.length
     post.comments = post.comments.map( c => c._id.toString() !== req.params.commentId ? c : targetComment)
-    const savedPost = await post.save()
-    const populatedPost = await savedPost.populate([
-        {path: 'author', select: 'username'},
-        {path: 'subreddit', select: 'subredditName'},
-        {path: 'comments.commentedBy', select: 'username'},
-        {path: 'comments.replies.repliedBy', select: 'username'}
-    ])
+    await post.save()
     await commentAuthor.save()
-    return res.status(201).json(populatedPost)
+    const updatedComment = {
+        upvotedBy: targetComment.upvotedBy,
+        downvotedBy: targetComment.downvotedBy,
+        pointsCount: targetComment.pointsCount
+    }
+    return res.status(201).json(updatedComment)
 })
 
 
@@ -71,15 +70,14 @@ router.post('/:id/comment/commentId/downvote', auth, async (req, res) => {
     }
     targetComment.pointsCount = targetComment.upvotedBy.length - targetComment.downvotedBy.length
     post.comments = post.comments.map( c => c._id.toString() !== req.params.commentId ? c : targetComment)
-    const savedPost = await post.save()
-    const populatedPost = await savedPost.populate([
-        {path: 'author', select: 'username'},
-        {path: 'subreddit', select: 'subredditName'},
-        {path: 'comments.commentedBy', select: 'username'},
-        {path: 'comments.replies.repliedBy', select: 'username'}
-    ])
+    await post.save()
     await commentAuthor.save()
-    return res.status(201).json(populatedPost)
+    const updatedComment = {
+        upvotedBy: targetComment.upvotedBy,
+        downvotedBy: targetComment.downvotedBy,
+        pointsCount: targetComment.pointsCount
+    }
+    return res.status(201).json(updatedComment)
 })
 
 router.post('/:id/comment/:commentId/reply/replyId/upvote', auth, async (req, res) => {
@@ -116,15 +114,14 @@ router.post('/:id/comment/:commentId/reply/replyId/upvote', auth, async (req, re
     targetReply.pointsCount = targetReply.upvotedBy.length - targetReply.downvotedBy.length
     targetComment.replies = targetComment.replies.map( r => r._id.toString() !== replyId ? r : targetReply)
     post.comments = post.comments.map( c => c._id.toString() !== commentId ? c : targetComment)
-    const savedPost = await post.save()
-    const populatedPost = await savedPost.populate([
-        {path: 'author', select: 'username'},
-        {path: 'subreddit', select: 'subredditName'},
-        {path: 'comments.commentedBy', select: 'username'},
-        {path: 'comments.replies.repliedBy', select: 'username'}
-    ])
+    await post.save()
     await replyAuthor.save()
-    res.status(201).json(populatedPost)
+    const updatedReply = {
+        upvotedBy: targetReply.upvotedBy,
+        downvotedBy: targetReply.downvotedBy,
+        pointsCount: targetComment.pointsCount
+    }
+    res.status(201).json(updatedReply)
 })
 
 
@@ -162,15 +159,14 @@ router.post('/:id/comment/:commentId/reply/replyId/downvote', auth, async (req, 
     targetReply.pointsCount = targetReply.upvotedBy.length - targetReply.downvotedBy.length
     targetComment.replies = targetComment.replies.map( r => r._id.toString() !== replyId ? r : targetReply)
     post.comments = post.comments.map( c => c._id.toString() !== commentId ? c : targetComment)
-    const savedPost = await post.save()
-    const populatedPost = await savedPost.populate([
-        {path: 'author', select: 'username'},
-        {path: 'subreddit', select: 'subredditName'},
-        {path: 'comments.commentedBy', select: 'username'},
-        {path: 'comments.replies.repliedBy', select: 'username'}
-    ])
+    await post.save()
     await replyAuthor.save()
-    res.status(201).json(populatedPost)
+    const updatedReply = {
+        upvotedBy: targetReply.upvotedBy,
+        downvotedBy: targetReply.downvotedBy,
+        pointsCount: targetComment.pointsCount
+    }
+    res.status(201).json(updatedReply)
 })
 
 module.exports = router
