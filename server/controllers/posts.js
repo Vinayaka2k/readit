@@ -5,11 +5,20 @@ const {auth} = require('../utils/middleware')
 const {cloudinary} = require('../utils/config')
 const postTypeValidator = require('../utils/postTypeValidator')
 const Subreddit = require('../models/subreddit')
+const paginatedResults = require('../utils/paginatedResults')
 
-router.get('/', async (req, res) => {
-    const allPosts = await Post.find({})
-        .populate([{path: 'author', select: 'username'}, {path: 'subreddit', select:'subredditName'}])
-    res.status(200).json(allPosts)
+router.get('/new', async (req, res) => {
+    const page = Number(req.query.page)
+    const limit = Number(req.query.limit)
+    const postsCount = await Post.countDocuments()
+    const paginated = paginatedResults(page, limit, postsCount)
+    const allPosts = await post.find({}).populate({path:'author', select:'username'})
+    const paginatedPosts = {
+        previous: paginated.results.previous,
+        results: allPosts,
+        next: paginated.results.next
+    }
+    res.status(200).json(paginatedPosts)
 })
 
 router.post('/', auth, async (req, res) => {

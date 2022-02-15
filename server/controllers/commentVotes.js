@@ -33,12 +33,8 @@ router.post('/:id/comment/commentId/upvote', auth, async (req, res) => {
     post.comments = post.comments.map( c => c._id.toString() !== req.params.commentId ? c : targetComment)
     await post.save()
     await commentAuthor.save()
-    const updatedComment = {
-        upvotedBy: targetComment.upvotedBy,
-        downvotedBy: targetComment.downvotedBy,
-        pointsCount: targetComment.pointsCount
-    }
-    return res.status(201).json(updatedComment)
+   
+    return res.status(201).end()
 })
 
 
@@ -72,12 +68,8 @@ router.post('/:id/comment/commentId/downvote', auth, async (req, res) => {
     post.comments = post.comments.map( c => c._id.toString() !== req.params.commentId ? c : targetComment)
     await post.save()
     await commentAuthor.save()
-    const updatedComment = {
-        upvotedBy: targetComment.upvotedBy,
-        downvotedBy: targetComment.downvotedBy,
-        pointsCount: targetComment.pointsCount
-    }
-    return res.status(201).json(updatedComment)
+    
+    return res.status(201).end()
 })
 
 router.post('/:id/comment/:commentId/reply/replyId/upvote', auth, async (req, res) => {
@@ -116,12 +108,8 @@ router.post('/:id/comment/:commentId/reply/replyId/upvote', auth, async (req, re
     post.comments = post.comments.map( c => c._id.toString() !== commentId ? c : targetComment)
     await post.save()
     await replyAuthor.save()
-    const updatedReply = {
-        upvotedBy: targetReply.upvotedBy,
-        downvotedBy: targetReply.downvotedBy,
-        pointsCount: targetComment.pointsCount
-    }
-    res.status(201).json(updatedReply)
+   
+    res.status(201).end()
 })
 
 
@@ -161,12 +149,8 @@ router.post('/:id/comment/:commentId/reply/replyId/downvote', auth, async (req, 
     post.comments = post.comments.map( c => c._id.toString() !== commentId ? c : targetComment)
     await post.save()
     await replyAuthor.save()
-    const updatedReply = {
-        upvotedBy: targetReply.upvotedBy,
-        downvotedBy: targetReply.downvotedBy,
-        pointsCount: targetComment.pointsCount
-    }
-    res.status(201).json(updatedReply)
+    
+    res.status(201).end()
 })
 
 module.exports = router

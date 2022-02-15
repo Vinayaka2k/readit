@@ -42,3 +42,35 @@ export const useNavStyles = makeStyles(theme => ({
         }
     }
 }))
+
+export const useAuthStyles = (authType) =>
+  makeStyles((theme) => ({
+    authWrapper: {
+      display: 'flex',
+      flexDirection: authType === 'login' ? 'row' : 'row-reverse',
+    },
+    form: {
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      paddingLeft: 20,
+      paddingRight: 20,
+      paddingBottom: 20
+    },
+    formTitle: { textAlign: 'center' },
+    switchText: { textAlign: 'center' },
+    submitButton: {
+      marginTop: '1em',
+    },
+    input: {
+      display: 'flex',
+      alignItems: 'flex-end',
+    },
+    inputIcon: {
+      marginRight: 8,
+    },
+    sidePanel: {
+      padding: 20,
+      margin: 'auto 0',
+    },
+  }));

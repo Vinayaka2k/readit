@@ -3,6 +3,7 @@ import React from 'react'
 import {Paper, ThemeProvider } from '@material-ui/core'
 import { createTheme } from '@material-ui/core/styles'
 import { useMainPaperStyles } from './styles/muiStyles'
+import AuthForm from './components/AuthForm';
 
 const App = () => {
   const classes = useMainPaperStyles()
@@ -24,6 +25,8 @@ const App = () => {
         <NavBar />
       </Paper>
     </ThemeProvider>  
+   
+   
     )
 }
 

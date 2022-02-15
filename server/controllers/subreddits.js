@@ -8,8 +8,12 @@ router.get('/', async (req, res) => {
     res.json(allSubreddits)
 })
 
-router.get('/:id', async (req, res) => {
-    const subreddit = await Subreddit.findById(req.params.id)
+router.get('/:subredditName', async (req, res) => {
+    const subreddit = await (await Subreddit.findOne({subredditName: req.params.subredditName})).populate(
+        { path: 'admin', select: 'username' }
+    )
+    if(!subreddit)
+        return res.status(404).send({message: `Subreddit ${req.params.subredditName} was not found in database` })
     res.json(subreddit)
 })
 
