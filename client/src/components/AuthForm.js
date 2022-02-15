@@ -13,8 +13,15 @@ import ExitToAppIcon from '@material-ui/icons/ExitToApp'
 import PersonAddIcon from '@material-ui/icons/PersonAdd'
 
 const validationSchemaSignup = yup.object({
-    username : yup.string().required().max(20).min(3),
-    password: yup.string().required().min(6)
+    username : yup.string()
+        .required()
+        .max(20, 'Must be at most 20 characters')
+        .min(3, 'Must be atleast 3 characters')
+        .matches(/^[a-zA-Z0-9]$/, 'Only alpha-numeric characters allowed'),
+
+    password: yup.string()
+        .required()
+        .min(6, 'Must be atleast six characters')
 })
 const validationSchemaLogin = yup.object({
     username: yup.string().required(),
