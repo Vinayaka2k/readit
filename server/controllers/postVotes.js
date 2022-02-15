@@ -18,12 +18,12 @@ router.post('/:id/downvote', auth, async (req, res) => {
     
     if(post.downVotedBy.includes(user._id.toString())){
         post.downVotedBy = post.downVotedBy.filter(d => d.toString() !== user._id.toString())
-        author.karmaPoints.postKarma = author.karmaPoints.postKarma + 1;
+        author.karmaPoints.postKarma++
     }
     else{
         post.downVotedBy = post.downVotedBy.concat(user._id)
         post.upVotedBy = post.upVotedBy.filter(u => u.toString() !== user._id.toString())
-        author.karmaPoints.postKarma = author.karmaPoints.postKarma - 1;
+        author.karmaPoints.postKarma--
     }
     const calculatedPoints = post.upVotedBy.length - post.downVotedBy.length
     if(calculatedPoints < 0)
@@ -57,12 +57,12 @@ router.post('/:id/upvote', auth, async (req, res) => {
       
     if(post.upVotedBy.includes(user._id.toString()))  {          // already upvoted
         post.upVotedBy = post.upVotedBy.filter(u => u.toString() !== user._id.toString())
-        author.karmaPoints.postKarma = author.karmaPoints.postKarma - 1;
+        author.karmaPoints.postKarma--
     }
     else {                                                      // already downvoted OR not voted yet
         post.upVotedBy = post.upVotedBy.concat(user._id)
         post.downVotedBy = post.downVotedBy.filter(d => d.toString() !== user._id.toString())
-        author.karmaPoints.postKarma = author.karmaPoints.postKarma + 1;
+        author.karmaPoints.postKarma++
     }
     const calculatedPoints = post.upVotedBy.length - post.downVotedBy.length
     if(calculatedPoints < 0)

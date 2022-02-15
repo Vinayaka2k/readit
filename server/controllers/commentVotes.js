@@ -22,12 +22,12 @@ router.post('/:id/comment/commentId/upvote', auth, async (req, res) => {
 
     if(targetComment.upvotedBy.includes(user._id.toString())){
         targetComment.upvotedBy = targetComment.upvotedBy.filter( u => u.toString() !== user._id.toString())
-        commentAuthor.karmaPoints.commentKarma = commentAuthor.karmaPoints.commentKarma - 1
+        commentAuthor.karmaPoints.commentKarma --
     }
     else{
         targetComment.upvotedBy = targetComment.upvotedBy.concat(user._id)
         targetComment.downvotedBy = targetComment.downvotedBy.filter(d => d.toString() !== user._id.toString())
-        commentAuthor.karmaPoints.commentKarma = commentAuthor.karmaPoints.commentKarma + 1
+        commentAuthor.karmaPoints.commentKarma ++
     }
     targetComment.pointsCount = targetComment.upvotedBy.length - targetComment.downvotedBy.length
     post.comments = post.comments.map( c => c._id.toString() !== req.params.commentId ? c : targetComment)
@@ -61,12 +61,12 @@ router.post('/:id/comment/commentId/downvote', auth, async (req, res) => {
 
     if(targetComment.downvotedBy.includes(user._id.toString())){
         targetComment.downvotedBy = targetComment.downvotedBy.filter( u => u.toString() !== user._id.toString())
-        commentAuthor.karmaPoints.commentKarma = commentAuthor.karmaPoints.commentKarma + 1
+        commentAuthor.karmaPoints.commentKarma ++
     }
     else{
         targetComment.downvotedBy = targetComment.downvotedBy.concat(user._id)
         targetComment.upvotedBy = targetComment.upvotedBy.filter(d => d.toString() !== user._id.toString())
-        commentAuthor.karmaPoints.commentKarma = commentAuthor.karmaPoints.commentKarma - 1
+        commentAuthor.karmaPoints.commentKarma --
     }
     targetComment.pointsCount = targetComment.upvotedBy.length - targetComment.downvotedBy.length
     post.comments = post.comments.map( c => c._id.toString() !== req.params.commentId ? c : targetComment)
@@ -104,12 +104,12 @@ router.post('/:id/comment/:commentId/reply/replyId/upvote', auth, async (req, re
 
     if(targetReply.upvotedBy.includes(user._id.toString())){
         targetReply.upvotedBy = targetReply.upvotedBy.filter( u => u.toString() !== user._id.toString())
-        replyAuthor.karmaPoints.commentKarma = replyAuthor.karmaPoints.commentKarma - 1
+        replyAuthor.karmaPoints.commentKarma --
     }
     else{
         targetReply.upvotedBy = targetReply.upvotedBy.concat(user._id)
         targetReply.downvotedBy = targetReply.downvotedBy.filter( d => d.toString() !== user._id.toString())
-        replyAuthor.karmaPoints.commentKarma =  replyAuthor.karmaPoints.commentKarma + 1
+        replyAuthor.karmaPoints.commentKarma ++
     }
     targetReply.pointsCount = targetReply.upvotedBy.length - targetReply.downvotedBy.length
     targetComment.replies = targetComment.replies.map( r => r._id.toString() !== replyId ? r : targetReply)
@@ -149,12 +149,12 @@ router.post('/:id/comment/:commentId/reply/replyId/downvote', auth, async (req, 
 
     if(targetReply.downvotedBy.includes(user._id.toString())){
         targetReply.downvotedBy = targetReply.downvotedBy.filter( d => d.toString() !== user._id.toString())
-        replyAuthor.karmaPoints.commentKarma = replyAuthor.karmaPoints.commentKarma + 1
+        replyAuthor.karmaPoints.commentKarma ++
     }
     else{
         targetReply.downvotedBy = targetReply.downvotedBy.concat(user._id)
         targetReply.upvotedBy = targetReply.upvotedBy.filter( u => u.toString() !== user._id.toString())
-        replyAuthor.karmaPoints.commentKarma =  replyAuthor.karmaPoints.commentKarma - 1
+        replyAuthor.karmaPoints.commentKarma --
     }
     targetReply.pointsCount = targetReply.upvotedBy.length - targetReply.downvotedBy.length
     targetComment.replies = targetComment.replies.map( r => r._id.toString() !== replyId ? r : targetReply)
